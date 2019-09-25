@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotknowyou.springsources.mybatisTest.mapper.UserMapper">
+
+    <select id="getUserList" resultType="MyUsers">
+        SELECT * FROM exercise_08_tables_user
+    </select>
+
+    <!-- Mybatis 中的类型处理器 测试  -->
+    <insert id="addUser" parameterType="MyUsers">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO exercise_08_tables_user (name,ages,money,status)
+        VALUE (#{name},#{ages},#{money},#{userState,typeHandler=org.apache.ibatis.type.EnumTypeHandler})
+    </insert>
+
+    <resultMap id="MyUsersResult" type="MyUsers">
+        <result column="id" property="id"></result>
+        <result column="ages" property="ages"></result>
+        <result column="money" property="money"></result>
+        <result column="status" property="userState" typeHandler="org.apache.ibatis.type.EnumTypeHandler"></result>
+    </resultMap>
+
+    <select id="getUser" parameterType="int" resultMap="MyUsersResult" resultType="MyUsers">
+        SELECT * FROM exercise_08_tables_user WHERE id = #{id}
+    </select>
+</mapper>

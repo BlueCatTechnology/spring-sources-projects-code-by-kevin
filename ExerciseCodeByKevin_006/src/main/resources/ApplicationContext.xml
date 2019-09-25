@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       ">
+
+        <!--  配置 dataSources -->
+        <bean id="dataSources" class="org.apache.commons.dbcp.BasicDataSource">
+                <property name="driverClassName">
+                        <value>com.mysql.jdbc.Driver</value>
+                </property>
+                <property name="url">
+                        <value>jdbc:mysql://127.0.0.1:3306/spring_sources_projects_code_by_kevin</value>
+                </property>
+                <property name="username">
+                        <value>root</value>
+                </property>
+                <property name="password">
+                        <value>liu2019</value>
+                </property>
+        </bean>
+
+        <!-- 将 UserServiceImpl 注入工厂中 -->
+        <bean id="userServiceImpl" class="com.iotknowyou.springsources.springDaoTest.service.Impl.UserServiceImpl" depends-on="dataSources">
+                <property name="dataSource" ref="dataSources"></property>
+        </bean>
+
+        <!-- 将 LoginServiceImpl 注入工厂中 -->
+        <bean id="loginServiceImpl" class="com.iotknowyou.springsources.springDaoTest.service.Impl.LoginServiceImpl" depends-on="dataSources">
+                <property name="dataSource" ref="dataSources"></property>
+        </bean>
+
+        <!-- 将 LoginServiceImpl 注入工厂中 -->
+        <bean id="userInfoUpdateImpl" class="com.iotknowyou.springsources.springDaoTest.service.Impl.UserInfoUpdateImpl">
+                <constructor-arg ref="dataSources" index="0"></constructor-arg>
+        </bean>
+
+        <!-- 将 TransferServiceImpl 注入到 工厂中 -->
+        <bean id="transferServiceImpl" class="com.iotknowyou.springsources.springDaoTest.service.Impl.TransferServiceImpl">
+                <property name="dataSource" ref="dataSources"></property>
+        </bean>
+
+
+
+
+        <!-- 数据操作的时候，有可能会出现异常，我们需要添加 事务处理 -->
+        <!-- 配置事务管理对象，DataSourceTransactionManager-->
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+                <property name="dataSource" ref="dataSources"></property>
+        </bean>
+        <!-- 配置事务管理对象，-->
+        <!-- 配置业务层代理-->
+        <!-- 使用的是代理设计模式-->
+        <bean id="userDaoProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                <!--配置目标对象-->
+                <property name="target" ref="transferServiceImpl"></property>
+                <!--注入事务管理器-->
+                <property name="transactionManager" ref="transactionManager"></property>
+                <!--注入事务属性-->
+                <property name="transactionAttributes">
+                        <props>
+                                <prop key="transfer">PROPAGATION_REQUIRED</prop>
+                        </props>
+                </property>
+        </bean>
+
+</beans>

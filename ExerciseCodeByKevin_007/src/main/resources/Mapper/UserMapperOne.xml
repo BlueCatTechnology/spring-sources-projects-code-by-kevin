@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iotknowyou.springsources.mybatisTest.mapper.UserMapperOne">
+    <select id="getUserList" resultType="com.iotknowyou.springsources.mybatisTest.entity.User">
+        SELECT * FROM exercise_06_tables_user
+    </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       ">
+
+    <!-- 下面，我们将 拦截器与Services 进行配置  -->
+    <bean id="serviceImplA" class="com.iotknowyou.springsources.server.AopServicesImpl">
+        <property name="description" value="basicAop"></property>
+    </bean>
+
+    <bean id="serviceAspectBean" class="com.iotknowyou.springsources.XMLAdvice.XmlAdvice"></bean>
+
+    <!-- AspectJ 基于XML的配置  -->
+    <aop:config>
+        <aop:aspect id="serviceAspect" ref="serviceAspectBean" >
+            <!-- 定义 com.iotknowyou.springsources.server 下的所有方法都有切面 -->
+            <aop:pointcut id="servicePointcut" expression="execution(* com.iotknowyou.springsources.server.*.withAop*(..))"></aop:pointcut>
+            <aop:before pointcut-ref="servicePointcut" method="beforeAdvice"></aop:before>
+            <aop:after pointcut-ref="servicePointcut" method="afterAdvice"></aop:after>
+            <aop:after-returning pointcut-ref="servicePointcut" method="afterReturnAdvice" returning="result"></aop:after-returning>
+            <aop:around pointcut-ref="servicePointcut" method="aroundAdvice"></aop:around>
+            <aop:after-throwing pointcut-ref="servicePointcut" method="throwingAdvice" throwing="e"></aop:after-throwing>
+        </aop:aspect>
+    </aop:config>
+
+
+</beans>
